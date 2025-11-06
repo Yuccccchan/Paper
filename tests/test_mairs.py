@@ -23,9 +23,9 @@ def test_tsn_switch():
     assert switch.ports[0]['connected_to'] == 1
     
     # Test slot allocation
-    assert switch.is_slot_available(0, 0) == True
+    assert switch.is_slot_available(0, 0)
     switch.allocate_slot(0, 0, flow_id=1)
-    assert switch.is_slot_available(0, 0) == False
+    assert not switch.is_slot_available(0, 0)
     
     print("✓ TSN Switch tests passed")
 

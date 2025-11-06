@@ -67,9 +67,11 @@ class TSNNetwork:
             # Find available port on to_switch  
             if to_port is None:
                 to_port = self._find_available_port(to_switch)
-                
-            self.switches[from_switch].connect_port(from_port, to_switch)
-            self.switches[to_switch].connect_port(to_port, from_switch)
+            
+            # Only connect if both ports are available
+            if from_port is not None and to_port is not None:
+                self.switches[from_switch].connect_port(from_port, to_switch)
+                self.switches[to_switch].connect_port(to_port, from_switch)
     
     def _find_available_port(self, switch_id):
         """Find an available port on a switch."""
@@ -94,9 +96,13 @@ class TSNNetwork:
         import math
         periods = [flow.period for flow in self.flows.values()]
         
-        # Calculate LCM of all periods
+        # Calculate LCM of all periods (convert to integers in units of 0.1 ms)
         def lcm(a, b):
-            return abs(a * b) // math.gcd(int(a * 1000), int(b * 1000)) * 1000 / 1000
+            # Convert to integers (0.1 ms units to avoid floating point issues)
+            a_int = int(a * 10)
+            b_int = int(b * 10)
+            result = abs(a_int * b_int) // math.gcd(a_int, b_int)
+            return result / 10.0  # Convert back to ms
         
         self.hyperperiod = periods[0]
         for period in periods[1:]:

@@ -6,6 +6,7 @@ Each switch has an agent that makes local routing and scheduling decisions
 import torch
 import torch.nn as nn
 import numpy as np
+import networkx as nx
 
 class MAIRSAgent:
     """
@@ -101,10 +102,9 @@ class MAIRSAgent:
         for neighbor in neighbors:
             # Distance to destination
             try:
-                import networkx as nx
                 dist = nx.shortest_path_length(network.graph, neighbor, flow.destination)
                 obs.append(1.0 / (dist + 1))  # Inverse distance
-            except:
+            except (nx.NetworkXNoPath, nx.NetworkXError):
                 obs.append(0.0)
             
             # Link utilization
